@@ -1,5 +1,9 @@
 package com.tao.controller;
 
+import com.tao.mapper.UserMapper;
+import com.tao.util.Result;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,10 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class HomeController {
 
-    @GetMapping("/")
+    private final UserMapper userMapper;
+
+    @GetMapping("/hello")
     public String hello() {
         return "hello";
+    }
+
+    @GetMapping("/user")
+    public Result<?> user() {
+        return Result.success(userMapper.selectList(null));
     }
 }

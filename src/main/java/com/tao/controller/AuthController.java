@@ -1,10 +1,11 @@
 package com.tao.controller;
 
-import com.tao.common.JwtUtil;
-import com.tao.entity.pojo.User;
-import com.tao.service.UserService;
+import com.tao.common.JwtUtils;
+import com.tao.entity.dto.LoginUser;
+import com.tao.util.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,123 +16,55 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api")
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserService userService;
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<?> login(@RequestBody LoginUser loginRequest) {
         try {
-            String username = loginRequest.get("username");
-            String password = loginRequest.get("password");
+            System.out.println("收到登录请求: " + loginRequest.getUsername());
 
-            System.out.println("登录请求: username=" + username + ", password=" + password);
-
+            // 进行认证
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
             );
 
+            // 认证成功，生成JWT
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtil.generateJwtToken(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
+            // 返回token和信息
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
-            response.put("message", "登录成功");
+            response.put("type", "Bearer");
+            response.put("username", authentication.getName());
+            response.put("authorities", authentication.getAuthorities());
 
-            return ResponseEntity.ok(response);
+            System.out.println("登录成功，返回token: " + jwt);
+            return Result.success(response);
+
         } catch (Exception e) {
             System.out.println("登录失败: " + e.getMessage());
-            return ResponseEntity.badRequest().body("登录失败: " + e.getMessage());
+            return Result.fail("用户名或密码错误: " + e.getMessage());
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        try {
-            if (userService.userExists(user.getUsername())) {
-                return ResponseEntity.badRequest().body("用户名已存在");
-            }
-
-            // 验证角色代码有效性（现在是字符串类型）
-            if (user.getRole() != null) {
-                // 允许的角色值："0", "1", "2", null（null会使用默认值）
-                if (!user.getRole().equals("0") && !user.getRole().equals("1") && !user.getRole().equals("2")) {
-                    return ResponseEntity.badRequest().body("无效的角色代码，只能是0、1或2");
-                }
-            }
-
-            userService.registerUser(user);
-
-            return ResponseEntity.ok("注册成功");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("注册失败: " + e.getMessage());
-        }
+    @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<?> logout() {
+        SecurityContextHolder.clearContext();
+        return Result.success("退出成功");
     }
 
-    // 新增：管理员注册接口（只有管理员可以创建管理员账号）
-    @PostMapping("/register/admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody User user) {
-        try {
-            // 检查当前用户是否是管理员
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            boolean isAdmin = authentication.getAuthorities().stream()
-                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
-            if (!isAdmin) {
-                return ResponseEntity.status(403).body("权限不足，只有管理员可以创建管理员账号");
-            }
-
-            if (userService.userExists(user.getUsername())) {
-                return ResponseEntity.badRequest().body("用户名已存在");
-            }
-
-            // 强制设置为管理员角色
-            user.setRole("0");
-            userService.registerUser(user);
-
-            return ResponseEntity.ok("管理员账号注册成功");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("注册失败: " + e.getMessage());
-        }
-    }
-
-    // 新增：带角色选择的注册接口
-    @PostMapping("/register-with-role")
-    public ResponseEntity<?> registerWithRole(@RequestBody Map<String, String> registerRequest) {
-        try {
-            String username = registerRequest.get("username");
-            String password = registerRequest.get("password");
-            String nickname = registerRequest.get("nickname");
-            String role = registerRequest.get("role");
-
-            if (userService.userExists(username)) {
-                return ResponseEntity.badRequest().body("用户名已存在");
-            }
-
-            // 验证角色
-            if (role != null && !role.equals("0") && !role.equals("1") && !role.equals("2")) {
-                return ResponseEntity.badRequest().body("无效的角色代码，只能是0、1或2");
-            }
-
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword(password);
-            user.setNickname(nickname);
-            user.setRole(role); // 可以是null，会使用默认值
-
-            userService.registerUser(user);
-
-            return ResponseEntity.ok("注册成功");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("注册失败: " + e.getMessage());
-        }
+    // 添加一个测试接口
+    @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<?> test() {
+        return Result.success("测试接口正常");
     }
 }

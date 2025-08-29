@@ -13,15 +13,18 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    @TableField("user_name")
+    @TableField("username")
     private String username;
 
-    @TableField("nick_name")
+    @TableField("nickname")
     private String nickname;
 
     @TableField("password")
     private String password;
 
     @TableField("role")
-    private String role = "1"; // 字符类型的数字，默认值为"1"（用户）
+    private Object role;
+
+    private Integer enabled;
+
 }

@@ -27,7 +27,7 @@ public class Result<T> {
     }
 
     public static <T> Result<T> success(T data) {
-        Result<T> result = new Result<T>();
+        Result<T> result = new Result<>();
         result.setCode(ResultCode.SUCCESS.getCode());
         result.setMessage(ResultCode.SUCCESS.getMessage());
         result.setData(data);
@@ -35,15 +35,22 @@ public class Result<T> {
     }
 
     public static <T> Result<T> fail() {
-        Result<T> result = new Result<T>();
+        Result<T> result = new Result<>();
         result.setCode(ResultCode.FAIL.getCode());
         result.setMessage(ResultCode.FAIL.getMessage());
         return result;
     }
 
     public static <T> Result<T> fail(String message) {
-        Result<T> result = new Result<T>();
+        Result<T> result = new Result<>();
         result.setCode(ResultCode.FAIL.getCode());
+        result.setMessage(message);
+        return result;
+    }
+
+    public static <T> Result<T> fail(ResultCode code, String message) {
+        Result<T> result = new Result<>();
+        result.setCode(code.getCode());
         result.setMessage(message);
         return result;
     }

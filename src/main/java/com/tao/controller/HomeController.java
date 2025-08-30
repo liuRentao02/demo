@@ -22,8 +22,8 @@ public class HomeController {
     private final UserMapper userMapper;
 
     @GetMapping("/hello")
-    public String hello() {
-        return "hello";
+    public Result<?> hello() {
+        return Result.success("hello");
     }
 
     @GetMapping("/user")

@@ -1,5 +1,6 @@
 package com.tao.controller;
 
+import com.tao.util.Result;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyUserController {
 
     @GetMapping("/test")
-    public String test() {
-        return "user";
+    public Result<?> test() {
+        return Result.success("user");
     }
 }

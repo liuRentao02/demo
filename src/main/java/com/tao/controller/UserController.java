@@ -1,12 +1,14 @@
 package com.tao.controller;
 
+import com.tao.entity.vo.LoginUser;
 import com.tao.entity.vo.UserVo;
 import com.tao.service.Imp.MailService;
+import com.tao.util.Result;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * UserController
@@ -15,39 +17,36 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @version 1.0
  * @since 2025/8/30 16:38
  */
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final MailService mailService;
 
     @PostMapping("/sendEmail")
-    @ResponseBody
-    public String sendEmail(String email, HttpSession httpSession){
+    public Result<?> sendEmail(String email, HttpSession httpSession){
         boolean b = mailService.sendMimeMail(email, httpSession);
         if(b){
-            return "success";
+            return Result.success("success");
         }
-        return "false";
+        return Result.fail("false");
     }
 
     @PostMapping("/register")
-    @ResponseBody
-    public String register(UserVo userVo, HttpSession session){
+    public Result<?> register(@RequestBody UserVo userVo, HttpSession session){
         boolean registered = mailService.registered(userVo, session);
         if(registered){
-            return "success";
+            return Result.success("success");
         }
-        return "false";
+        return Result.fail("false");
     }
 
     @PostMapping("/login")
-    @ResponseBody
-    public String login(String email, String password){
-        boolean b = mailService.loginIn(email, password);
+    public Result<?> login(@RequestBody LoginUser user){
+        boolean b = mailService.loginIn(user.getEmail(), user.getPassword());
         if(b){
-            return "success";
+            return Result.success("success");
         }
-        return "false";
+        return Result.fail("false");
     }
 }

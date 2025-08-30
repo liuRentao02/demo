@@ -1,9 +1,7 @@
 package com.tao.entity.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -26,5 +24,7 @@ public class User {
     private Object role;
 
     private Integer enabled;
+
+    private String email;
 
 }

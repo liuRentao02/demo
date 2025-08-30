@@ -24,6 +24,7 @@ public class UserVoToUser {
         user.setUsername(userVo.getUsername());
         user.setPassword(userVo.getPassword());
         user.setEmail(userVo.getEmail());
+        user.setNickname(userVo.getNickname());
 
         // 返回包装后的对象
         return user;

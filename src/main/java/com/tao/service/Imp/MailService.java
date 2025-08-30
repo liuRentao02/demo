@@ -15,7 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -122,7 +125,7 @@ public class MailService {
             if (result > 0) {
                 log.info("用户插入成功，ID: {}", user.getId()); // 如果id是自增的
                 // 立即查询验证数据是否真的插入
-                User insertedUser = userMapper.queryByEmail(user.getEmail());
+                List<User> insertedUser = userMapper.queryByEmail(user.getEmail());
                 log.info("插入后查询结果: {}", insertedUser);
             } else {
                 log.warn("用户插入失败");
@@ -146,13 +149,18 @@ public class MailService {
      * @return 登录是否成功
      */
     public boolean loginIn(String email, String password) {
-        User user = userMapper.queryByEmail(email);
-
-        if (user == null) {
-            return false;
+        List<User> users = userMapper.queryByEmail(email);
+        AtomicBoolean flag = new AtomicBoolean(false);
+        if (users == null || users.isEmpty()) {
+            return flag.get();
+        }else {
+            users.forEach(u->{
+                if (u.getPassword().equals(password)) {
+                    flag.set(true);
+                }
+            });
         }
 
-        // 建议使用密码加密验证，这里保持原逻辑
-        return user.getPassword().equals(password);
+        return flag.get();
     }
 }

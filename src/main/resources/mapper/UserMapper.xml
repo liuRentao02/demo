@@ -6,7 +6,7 @@
 
     <insert id="insertUser" parameterType="com.tao.entity.pojo.User">
         insert into user (username, nickname, password, email)
-        values (#{username}, '1', #{password}, #{email})
+        values (#{username}, #{nickname}, #{password}, #{email})
     </insert>
 
     <select id="queryByEmail" resultType="com.tao.entity.pojo.User">

@@ -19,6 +19,8 @@ public class UserVo {
 
     private String password;
 
+    private String nickname;
+
     private String email;
     //    验证码
     private String code;

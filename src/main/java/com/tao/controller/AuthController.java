@@ -4,6 +4,7 @@ import com.tao.common.JwtUtils;
 import com.tao.entity.dto.LoginUser;
 import com.tao.util.Result;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -26,7 +28,7 @@ public class AuthController {
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public Result<?> login(@RequestBody LoginUser loginRequest) {
         try {
-            System.out.println("收到登录请求: " + loginRequest.getUsername());
+            log.info("收到登录请求: {}", loginRequest.getUsername());
 
             // 进行认证
             Authentication authentication = authenticationManager.authenticate(
@@ -47,11 +49,11 @@ public class AuthController {
             response.put("username", authentication.getName());
             response.put("authorities", authentication.getAuthorities());
 
-            System.out.println("登录成功，返回token: " + jwt);
+            log.info("登录成功，返回token: {}", jwt);
             return Result.success(response);
 
         } catch (Exception e) {
-            System.out.println("登录失败: " + e.getMessage());
+            log.error("登录失败: {}", e.getMessage());
             return Result.fail("用户名或密码错误: " + e.getMessage());
         }
     }

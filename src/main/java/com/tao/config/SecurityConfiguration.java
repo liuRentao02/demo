@@ -67,9 +67,9 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
     }
-
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
+//s为压制警告的，没有其他意义
+//s    @Bean
+//s    public PasswordEncoder passwordEncoder() {
 //        // 警告：仅用于测试环境！
 //        return new PasswordEncoder() {
 //            @Override
@@ -118,14 +118,7 @@ public class SecurityConfiguration {
     // 添加请求日志过滤器
     private static class RequestLoggingFilter extends OncePerRequestFilter {
         @Override
-        protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
-            System.out.println("=== 请求信息 ===");
-            System.out.println("URL: " + request.getRequestURL());
-            System.out.println("Method: " + request.getMethod());
-            System.out.println("Authorization: " + request.getHeader("Authorization"));
-            System.out.println("Content-Type: " + request.getHeader("Content-Type"));
-            System.out.println("==================");
-
+        protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
             filterChain.doFilter(request, response);
         }
     }

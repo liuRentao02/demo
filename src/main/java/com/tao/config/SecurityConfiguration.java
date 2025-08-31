@@ -53,7 +53,6 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/logout").permitAll()
                         .requestMatchers("/api/test").permitAll()
                         .requestMatchers("/register").permitAll()
-                        .requestMatchers("/login").permitAll()
                         .requestMatchers("/sendEmail").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER")

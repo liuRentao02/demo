@@ -3,7 +3,9 @@ package com.tao.entity.vo;
 import com.tao.entity.pojo.User;
 
 /**
- * UserVoToUser
+ * UserVoToUser - 用户数据转换工具类
+ * 负责将前端提交的用户注册信息转换为数据库存储的用户对象
+ * 剔除表单中的验证码等临时信息，保留核心用户数据
  *
  * @author LiuRentao
  * @version 1.0
@@ -12,21 +14,18 @@ import com.tao.entity.pojo.User;
 public class UserVoToUser {
 
     /**
-     * 将表单中的对象转化为数据库中存储的用户对象（剔除表单中的code）
-     * @return User
+     * 将前端表单中的UserVo对象转化为数据库中存储的User对象
+     * 剔除表单中的验证码等临时信息，只保留核心用户数据
+     *
+     * @param userVo 前端提交的用户注册信息
+     * @return 数据库存储的用户对象
      */
     public static User toUser(UserVo userVo) {
-
-        //创建一个数据库中存储的对象
         User user = new User();
-
-        //传值
         user.setUsername(userVo.getUsername());
-        user.setPassword(userVo.getPassword());
+        user.setPassword(userVo.getPassword()); // 后续会在Service层加密
         user.setEmail(userVo.getEmail());
         user.setNickname(userVo.getNickname());
-
-        // 返回包装后的对象
         return user;
     }
 }

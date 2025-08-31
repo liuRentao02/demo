@@ -29,7 +29,7 @@ public class JwtUtils {
 
     public String generateJwtToken(org.springframework.security.core.Authentication authentication) {
         String username = authentication.getName();
-        log.info("生成jwt:{}", username);
+        log.info("生成jwt的用户名:{}", username);
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())

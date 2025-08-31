@@ -46,15 +46,13 @@ public class AuthController {
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
             response.put("type", "Bearer");
-            response.put("username", authentication.getName());
-            response.put("authorities", authentication.getAuthorities());
 
             log.info("登录成功，返回token: {}", jwt);
             return Result.success(response);
 
         } catch (Exception e) {
             log.error("登录失败: {}", e.getMessage());
-            return Result.fail("用户名或密码错误: " + e.getMessage());
+            return Result.fail("用户名/邮箱或密码错误: " + e.getMessage());
         }
     }
 

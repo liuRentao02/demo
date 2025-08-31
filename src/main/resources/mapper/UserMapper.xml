@@ -14,5 +14,15 @@
         from user
         where email = #{email}
     </select>
+    <select id="selectByUsername" resultType="com.tao.entity.pojo.User">
+        Select *
+        from user
+        where username = #{username};
+    </select>
+    <select id="selectByEmail" resultType="com.tao.entity.pojo.User">
+        select *
+        from user
+        where email = #{email};
+    </select>
 
 </mapper>
